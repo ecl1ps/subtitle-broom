@@ -1,0 +1,99 @@
+﻿<Window x:Class="SubtitleBroom.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:SubtitleBroom.Converters"
+        Title="SubtitleBroom" Height="700" Width="900" MinWidth="800" MinHeight="500">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
+        <converters:CountToColorConverter x:Key="CountToColorConverter"></converters:CountToColorConverter>
+    </Window.Resources>
+    <Grid>
+        <Label Content="Select directory with movies" HorizontalAlignment="Left" Margin="15,15,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblDirectory" HorizontalAlignment="Left" Height="28" Margin="15,46,0,0" VerticalAlignment="Top" Width="402" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
+        <Button x:Name="btnSelect" Content="Select..." HorizontalAlignment="Left" Margin="425,46,0,0" VerticalAlignment="Top" Width="91" Height="28" Click="btnSelect_Click"/>
+        <Button x:Name="btnCheck" Content="Refresh" Margin="0,0,324,10" Click="btnCheck_Click" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="98"/>
+        <Button x:Name="btnFixNaming" Content="Fix Naming" ToolTip="Adds .cs postfix to subtitle name if there is none" Margin="0,0,221,10" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="98" Click="btnFixNaming_Click"/>
+        <Button x:Name="btnFixLocations" Content="Fix Locations" ToolTip="Moves subtitles to correct locations (next to video)" Margin="0,0,118,10" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="98" Click="btnFixLocations_Click"/>
+        <Button x:Name="btnClose" Content="Close" Margin="0,0,15,11" Click="btnClose_Click" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="98"/>
+        <StackPanel Margin="15,79,10,0" Height="28" VerticalAlignment="Top" Orientation="Horizontal">
+            <Label Content="Status:" FontWeight="Bold" />
+            <Label x:Name="lblStatus" Content="Ready" FontWeight="Bold" />
+        </StackPanel>
+        <StackPanel Margin="15,103,10,0" Height="28" VerticalAlignment="Top" Orientation="Horizontal">
+            <Label Content="Subtitles total:" />
+            <Label x:Name="lblTotal" Content="0" />
+            <Label Content="Subtitles without video:" />
+            <Label x:Name="lblWithoutVideo" Content="0" Foreground="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource CountToColorConverter}}" />
+            <Label Content="Subtitles without lang code:" />
+            <Label x:Name="lblWithoutLang" Content="0" Foreground="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource CountToColorConverter}}" />            
+            <Label Content="Subtitles need moving:" />
+            <Label x:Name="lblNeedMoving" Content="0" Foreground="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource CountToColorConverter}}" />
+            <Label Content="Videos without subtitle:" />
+            <Label x:Name="lblWithoutSubtitles" Content="0" Foreground="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource CountToColorConverter}}" />            
+        </StackPanel>
+        <StackPanel Margin="15,0,10,10" Height="28" VerticalAlignment="Bottom" Orientation="Horizontal">
+            <Label Content="Subtitles renamed:" />
+            <Label x:Name="lblRenamed" Content="0" />
+        </StackPanel>        
+        <TabControl Margin="15,135,15,45">
+            <TabItem Header="Videos Without Subtitle">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ListView ItemsSource="{Binding VideosWithoutSubtitles}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <WrapPanel>
+                                    <Button Content="Ignore" Click="Button_Click" HorizontalAlignment="Left" Margin="5,0" Padding="5,3" />
+                                    <Button Content="View" Click="Button_ClickView" HorizontalAlignment="Left" Margin="0,0,5,0" Padding="5,3" />
+                                    <TextBlock Text="{Binding}" HorizontalAlignment="Center" />
+                                </WrapPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Subtitles Without Video">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ListView x:Name="lvSubtitlesWithoutVideo" ItemsSource="{Binding SubtitlesWithoutVideo}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <WrapPanel Orientation="Vertical" >
+                                    <Grid MouseUp="subtitleItem_OnMouseUp">
+                                        <TextBlock Text="&#10551;" />
+                                        <TextBlock Text="{Binding Subtitle}" Margin="20,0,0,0" />
+                                    </Grid>
+                                    <Grid Margin="20,10,10,10" Visibility="{Binding IsActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition></RowDefinition>
+                                            <RowDefinition></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Text="Rename to match video:" FontWeight="Bold" Margin="0,0,0,5" />
+                                        <ListBox Grid.Row="1" ItemsSource="{Binding AvailableVideos}" HorizontalAlignment="Stretch" SelectionChanged="subtitleItemVideo_SelectionChanged" />
+                                    </Grid>
+                                </WrapPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>                    
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Subtitles Need Moving">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ListBox x:Name="lbNeedMoving" />
+                </ScrollViewer>
+            </TabItem>            
+            <TabItem Header="Ignored Videos">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ListView ItemsSource="{Binding IgnoredVideos}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <WrapPanel>
+                                    <Button Content="Remove" HorizontalAlignment="Left" Margin="5,0" Padding="3,2" Click="Button_Click_1" />
+                                    <TextBlock Text="{Binding}" HorizontalAlignment="Center" />
+                                </WrapPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
