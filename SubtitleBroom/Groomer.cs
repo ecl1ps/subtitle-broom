@@ -18,6 +18,8 @@ namespace SubtitleBroom
         //private static readonly string[] langCodes = { "cs", "en", "cze", "eng", "ces" };
         private static readonly Dictionary<string, string> langCodeMappings = new Dictionary<string, string> { { "cs", "cs" }, { "en", "en" }, { "cze", "cs" }, { "eng", "en" }, { "ces", "cs" } };
 
+        private static readonly Regex subtitlePattern = new Regex(subtitleExtensionsPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         private readonly string rootDirectory;
 
         public int SubtitlesTotal { get; private set; }
@@ -153,8 +155,6 @@ namespace SubtitleBroom
                     SubtitlesWithoutVideo.Add(fi);
                 }
 
-                Regex subtitlePattern = new Regex(subtitleExtensionsPattern, RegexOptions.IgnoreCase);
-
                 foreach (string file in GetFiles(rootDirectory, videoExtensionsPattern, SearchOption.AllDirectories))
                 {
                     var video = new FileInfo(file);
@@ -190,6 +190,14 @@ namespace SubtitleBroom
         {
             var nameWOExt = Path.GetFileNameWithoutExtension(name);
             return nameWOExt != null && (nameWOExt.EndsWith("cs", StringComparison.CurrentCultureIgnoreCase) || nameWOExt.EndsWith("en", StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        public static bool HasVideoSubtitle(string videoFile)
+        {
+            var video = new FileInfo(videoFile);
+            return video.Directory != null && video.Directory.EnumerateFiles().Any(subtitle =>
+                subtitlePattern.IsMatch(subtitle.Extension) &&
+                subtitle.Name.StartsWith(Path.GetFileNameWithoutExtension(video.Name), StringComparison.OrdinalIgnoreCase));
         }
     }
 }

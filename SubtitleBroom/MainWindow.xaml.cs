@@ -183,18 +183,20 @@ namespace SubtitleBroom
 
         private void subtitleItem_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (e.ChangedButton != MouseButton.Left)
+                return;
+
             var subtitleData = lvSubtitlesWithoutVideo.SelectedItem as SubtitleData;
             if (subtitleData == null)
                 return;
 
             subtitleData.IsActive = !subtitleData.IsActive;
 
-            if (subtitleData.IsInitialized)
+            if (!subtitleData.IsActive)
                 return;
 
-            subtitleData.IsInitialized = true;
-
-            foreach (var video in Groomer.GetAvailableVideosInDirectory(subtitleData.Subtitle.Directory))
+            subtitleData.AvailableVideos.Clear();
+            foreach (var video in Groomer.GetAvailableVideosInDirectory(subtitleData.Subtitle.Directory).Where(video => !Groomer.HasVideoSubtitle(video)))
                 subtitleData.AvailableVideos.Add(Path.GetFileName(video));
         }
 
