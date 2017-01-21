@@ -126,7 +126,7 @@ namespace SubtitleBroom
                     bool needsRename = true;
                     foreach (var code in langCodeMappings.Keys)
                     {
-                        if (subtitleNameWOExt.EndsWith(code, StringComparison.OrdinalIgnoreCase))
+                        if (subtitleNameWOExt.EndsWith("." + code, StringComparison.OrdinalIgnoreCase))
                         {
                             if (langCodeMappings[code] == code)
                                 needsRename = false;
@@ -137,16 +137,18 @@ namespace SubtitleBroom
                     if (needsRename)
                         SubtitlesWithoutLang++;
 
+                    // check if there is a video file next to subtitle file starting with the same name
                     if (fi.Directory != null && fi.Directory.EnumerateFiles()
                         .Any(f =>
                             videoExtensions.Contains(f.Extension) &&
-                            fi.Name.StartsWith(Path.GetFileNameWithoutExtension(f.Name), StringComparison.Ordinal)))
+                            fi.Name.StartsWith(Path.GetFileNameWithoutExtension(f.Name) + ".", StringComparison.Ordinal)))
                         continue;
 
+                    // check if there is a video file in parent folder of the subtitle file starting with the same name
                     if (fi.Directory != null && fi.Directory.Parent != null && fi.Directory.Parent.EnumerateFiles()
                         .Any(f =>
                             videoExtensions.Contains(f.Extension) &&
-                            fi.Name.StartsWith(Path.GetFileNameWithoutExtension(f.Name), StringComparison.OrdinalIgnoreCase)))
+                            fi.Name.StartsWith(Path.GetFileNameWithoutExtension(f.Name) + ".", StringComparison.OrdinalIgnoreCase)))
                     {
                         SubtitlesNeedMoving.Add(fi);
                         continue;
@@ -161,7 +163,7 @@ namespace SubtitleBroom
                     if (video.Directory != null &&
                         !video.Directory.EnumerateFiles().Any(subtitle =>
                             subtitlePattern.IsMatch(subtitle.Extension) &&
-                            subtitle.Name.StartsWith(Path.GetFileNameWithoutExtension(video.Name), StringComparison.OrdinalIgnoreCase)))
+                            subtitle.Name.StartsWith(Path.GetFileNameWithoutExtension(video.Name) + ".", StringComparison.OrdinalIgnoreCase)))
                     {
                         VideosWithoutSubtitle.Add(video);
                     }
@@ -197,7 +199,7 @@ namespace SubtitleBroom
             var video = new FileInfo(videoFile);
             return video.Directory != null && video.Directory.EnumerateFiles().Any(subtitle =>
                 subtitlePattern.IsMatch(subtitle.Extension) &&
-                subtitle.Name.StartsWith(Path.GetFileNameWithoutExtension(video.Name), StringComparison.OrdinalIgnoreCase));
+                subtitle.Name.StartsWith(Path.GetFileNameWithoutExtension(video.Name) + ".", StringComparison.OrdinalIgnoreCase));
         }
     }
 }
