@@ -100,7 +100,11 @@ namespace SubtitleBroom
                     if (!needsRename)
                         continue;
 
-                    fi.MoveTo(string.Format("{3}\\{0}.{1}{2}", subtitleNameWOExt, langCode, fi.Extension, fi.Directory.FullName));
+                    var targetFileName = string.Format("{3}\\{0}.{1}{2}", subtitleNameWOExt, langCode, fi.Extension, fi.Directory.FullName);
+                    if (File.Exists(targetFileName))
+                        continue;
+
+                    fi.MoveTo(targetFileName);
                     SubtitlesRenamed++;
                 }
             });
