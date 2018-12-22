@@ -12,9 +12,9 @@ namespace SubtitleBroom
 {
     class Groomer
     {
-        private static readonly string[] videoExtensions = { ".avi", ".mp4", ".mkv" };
+        private static readonly string[] videoExtensions = { ".avi", ".mp4", ".mkv", ".wmv" };
         private static readonly string subtitleExtensionsPattern = @"\.srt|\.sub";
-        private static readonly string videoExtensionsPattern = @"\.avi|\.mp4|\.mkv";
+        private static readonly string videoExtensionsPattern = @"\.avi|\.mp4|\.mkv|\.wmv";
         //private static readonly string[] langCodes = { "cs", "en", "cze", "eng", "ces" };
         private static readonly Dictionary<string, string> langCodeMappings = new Dictionary<string, string> { { "cs", "cs" }, { "en", "en" }, { "cze", "cs" }, { "eng", "en" }, { "ces", "cs" } };
 
