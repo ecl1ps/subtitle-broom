@@ -11,5 +11,7 @@ Broom helps with this chores and more!
 * Automatically add a postfix with a language code to subtitles' names.
 * Ignore specific videos if you don't need subtitles for it.
 
+![App](./Docs/app.png)
+
 ## Usage
 Download archive from _Releases section_, extract its content and run `SubtitleBroom.exe`.
