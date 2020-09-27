@@ -104,8 +104,15 @@ namespace SubtitleBroom
                     if (File.Exists(targetFileName))
                         continue;
 
-                    fi.MoveTo(targetFileName);
-                    SubtitlesRenamed++;
+                    try
+                    {
+                        fi.MoveTo(targetFileName);
+                        SubtitlesRenamed++;
+                    }
+                    catch (IOException)
+                    {
+                        // file might be locked by another process
+                    }
                 }
             });
         }
@@ -145,7 +152,7 @@ namespace SubtitleBroom
                     if (fi.Directory != null && fi.Directory.EnumerateFiles()
                         .Any(f =>
                             videoExtensions.Contains(f.Extension) &&
-                            fi.Name.StartsWith(Path.GetFileNameWithoutExtension(f.Name) + ".", StringComparison.Ordinal)))
+                            fi.Name.StartsWith(Path.GetFileNameWithoutExtension(f.Name) + ".", StringComparison.OrdinalIgnoreCase)))
                         continue;
 
                     // check if there is a video file in parent folder of the subtitle file starting with the same name
